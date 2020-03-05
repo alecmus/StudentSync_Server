@@ -76,6 +76,25 @@ void multicast_thread() {
     }
 }
 
+class server : public liblec::lecnet::tcp::server_async {
+public:
+    void log(const std::string& time_stamp,
+        const std::string& event) override {
+        std::cout << time_stamp + " " + event + "\n";
+    };
+
+    std::string on_receive(const client_address& address,
+        const std::string& data_received) {
+        std::cout << "Data received from " + address + ": " + data_received + "\n";
+
+        // echo server
+        return data_received;
+    };
+
+private:
+
+};
+
 int main() {
     std::cout << "\n**********************************************\n";
     printf("\x1B[32m%s\033[0m", "StudentSync Server version 1.0.0.0\n");
@@ -85,7 +104,24 @@ int main() {
     log("Creating multicast thread ...");
     std::thread t(multicast_thread);
 
-    // loop forever
-    while (1)
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    // configure server parameters
+    liblec::lecnet::tcp::server::server_params params;
+    params.port = 55553;
+    params.magic_number = 16;
+    params.max_clients = 200;
+
+    // create tcp/ip server object
+    server s;
+
+    // start the server
+    if (s.start(params)) {
+        while (s.starting())
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        t.join();
+    }
+    else
+        std::cout << "Server failed to start!\n";
+
+    return 0;
 }
