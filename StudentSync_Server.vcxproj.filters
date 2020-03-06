@@ -13,15 +13,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\process_data_received">
+      <UniqueIdentifier>{6728facb-3689-4952-87b0-7776ec9d888e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StudentSync_Server.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="process_data_received.cpp">
+      <Filter>Source Files\process_data_received</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="process_data_received.h">
+      <Filter>Source Files\process_data_received</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
