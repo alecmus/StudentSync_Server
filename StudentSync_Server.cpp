@@ -31,11 +31,6 @@
 // process data received
 #include "process_data_received.h"
 
-void log(std::string info) {
-    info = liblec::lecui::date::time_stamp() + " " + (info + "\n");
-    std::cout << info;
-}
-
 void broadcast() {
     // create a broadcast sender object
     liblec::lecnet::udp::broadcast::sender sender(30003);

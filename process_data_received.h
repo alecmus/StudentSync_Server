@@ -19,5 +19,7 @@
 
 #include <liblec/lecnet/tcp.h>
 
+void log(std::string info);
+
 std::string process_data_received(const liblec::lecnet::tcp::server::client_address& address,
     const std::string& data_received);
