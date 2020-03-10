@@ -32,6 +32,8 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 
+#define VERBOSE 0
+
 void log(std::string info) {
     info = liblec::lecui::date::time_stamp() + " " + (info + "\n");
     std::cout << info;
@@ -177,7 +179,10 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
     // get mode
     switch (data.mode) {
     case sync_mode::filenames: {
+
+#if VERBOSE
         log("Receiving list of files from client: " + address);
+#endif
 
         // deserialize filename_list
         std::vector<std::string> filename_list;
@@ -230,7 +235,9 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
         // deserialize files
         std::vector<file> files;
         if (deserialize_files(data.payload, files, error)) {
+#if VERBOSE
             log("Receiving requested files from client: " + address);
+#endif
 
             // add to consolidated file list
             for (const auto& this_file : files)
@@ -241,7 +248,10 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
         }
         else {
             // assume client is requesting for files that they are missing
+#if VERBOSE
             log("Client requesting possible missing files");
+#endif
+
             std::vector<file> missing_files;
 
             // to-do: implement (add missing files to variable)
@@ -260,8 +270,11 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
                 std::string serialized_sync_data;
                 if (serialize_sync_data(missing_files_data, serialized_sync_data, error)) {
                     // send to client
-                    if (missing_files.empty())
+                    if (missing_files.empty()) {
+#if VERBOSE
                         log("This client has no missing files");
+#endif
+                    }
                     else
                         log("Sending " + std::to_string(missing_files.size()) + " files to client");
 
