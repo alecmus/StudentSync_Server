@@ -165,7 +165,6 @@ bool deserialize_filename_list(const std::string& serialized,
 std::string process_data_received(const liblec::lecnet::tcp::server::client_address& address,
 	const std::string& data_received) {
     std::string error;
-    static std::vector<std::string> consolidated_filename_list; // list of the names of all the files in the pool
     static std::map<std::string, file> consolidated_file_list;  // <K, T> = <filename, file>; list of all the files in the pool
     static std::map<liblec::lecnet::tcp::server::client_address, std::vector<std::string>> client_filename_list;    // list of names of files given clients have
 
@@ -191,16 +190,16 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
             return std::string();
         }
 
+#if VERBOSE
+        std::string s;
+        for (const auto& it : filename_list)
+            s += (it + "; ");
+
+        log("Client files are: " + s);
+#endif
+
         // add to client_filename_list map
         client_filename_list[address] = filename_list;
-
-        // add files to consolidated filename_list
-        for (const auto& filename : filename_list) {
-            if (std::find(consolidated_filename_list.begin(), consolidated_filename_list.end(), filename) == consolidated_filename_list.end()) {
-                log("Adding from " + address + ": " + filename);
-                consolidated_filename_list.push_back(filename);
-            }
-        }
 
         // check files not in consolidated file list
         std::vector<std::string> missing_filename_list;
@@ -215,6 +214,18 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
             log(error);
             return std::string();
         }
+
+#if VERBOSE
+        if (!missing_filename_list.empty()) {
+            s.clear();
+            for (const auto& it : missing_filename_list)
+                s += (it + "; ");
+
+            std::cout << liblec::lecui::date::time_stamp() + " ";
+            printf("\x1B[32m%s\033[0m", "Requesting the following: ");
+            std::cout << s << std::endl;
+        }
+#endif
 
         // create a sync data object
         sync_data reply_data;
@@ -254,10 +265,12 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
 
             std::vector<file> missing_files;
 
-            // to-do: implement (add missing files to variable)
+            for (const auto& this_file : consolidated_file_list) {
+                const auto this_client_filename_list = client_filename_list.at(address);
 
-
-
+                if (std::find(this_client_filename_list.begin(), this_client_filename_list.end(), this_file.first) == this_client_filename_list.end())
+                    missing_files.push_back(this_file.second);
+            }
 
             // serialize missing files
             std::string serialized_missing_files;
