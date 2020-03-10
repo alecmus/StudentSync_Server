@@ -41,7 +41,7 @@ void log(std::string info) {
 
 struct file {
     std::string filename;
-    std::vector<char> filedata;
+    std::string filedata;
 };
 
 // template definition to make file serializable
