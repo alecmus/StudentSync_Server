@@ -5,8 +5,7 @@ Copyright (c) 2018 Alec T. Musasa (alecmus at live dot com), Kennedy J.J. Maturu
 Released under the Creative Commons Attribution Non-Commercial
 2.0 Generic license (CC BY-NC 2.0).
 
-See accompanying file CC-BY-NC-2.0.txt or copy at
-https://github.com/alecmus/StudentSyncServer/blob/master/CC-BY-NC-2.0.txt
+See accompanying file CC-BY-NC-2.0.txt or copy at [here](https://github.com/alecmus/StudentSync_Server/blob/master/CC-BY-NC-2.0.txt).
 
 Below is a short summary of what this license means.
 
