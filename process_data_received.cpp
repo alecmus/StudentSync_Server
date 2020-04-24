@@ -1,4 +1,6 @@
 /*
+** process_data_received.cpp
+**
 ** StudentSync LAN Synchronization Tool: Server
 ** Copyright (c) 2020
 ** Alec T. Musasa (alecmus at live dot com),
@@ -7,7 +9,8 @@
 ** Released under the Creative Commons Attribution Non-Commercial
 ** 2.0 Generic license (CC BY-NC 2.0).
 ** 
-** See accompanying file CC-BY-NC-2.0.txt or copy at [here](https://github.com/alecmus/StudentSync_Server/blob/master/CC-BY-NC-2.0.txt).
+** See accompanying file CC-BY-NC-2.0.txt or copy at
+** https://github.com/alecmus/StudentSync_Server/blob/master/CC-BY-NC-2.0.txt
 **
 *************************************************************************
 ** Project Details:
@@ -27,7 +30,7 @@
 #include <vector>
 #include <map>
 
-#include <liblec/lecui.h>   // for time_stamp()
+#include <liblec/cui.h>   // for time_stamp()
 
 // for serializing vectors
 #include <boost/serialization/vector.hpp>
@@ -39,7 +42,7 @@
 #define VERBOSE 0
 
 void log(std::string info) {
-    info = liblec::lecui::date::time_stamp() + " " + (info + "\n");
+    info = liblec::cui::date_gen::time_stamp() + " " + (info + "\n");
     std::cout << info;
 }
 
@@ -166,11 +169,17 @@ bool deserialize_filename_list(const std::string& serialized,
     }
 }
 
-std::string process_data_received(const liblec::lecnet::tcp::server::client_address& address,
+std::string process_data_received(
+    const liblec::lecnet::tcp::server::client_address& address,
 	const std::string& data_received) {
     std::string error;
-    static std::map<std::string, file> consolidated_file_list;  // <K, T> = <filename, file>; list of all the files in the pool
-    static std::map<liblec::lecnet::tcp::server::client_address, std::vector<std::string>> client_filename_list;    // list of names of files given clients have
+
+    // <K, T> = <filename, file>; list of all the files in the pool
+    static std::map<std::string, file> consolidated_file_list;
+
+    // list of names of files given clients have
+    static std::map<liblec::lecnet::tcp::server::client_address,
+        std::vector<std::string>> client_filename_list;
 
     // deserialize sync_data
     sync_data data;
@@ -189,7 +198,8 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
 
         // deserialize filename_list
         std::vector<std::string> filename_list;
-        if (!deserialize_filename_list(data.payload, filename_list, error)) {
+        if (!deserialize_filename_list(data.payload,
+            filename_list, error)) {
             log(error);
             return std::string();
         }
@@ -209,12 +219,14 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
         std::vector<std::string> missing_filename_list;
 
         for (const auto& filename : filename_list)
-            if (consolidated_file_list.find(filename) == consolidated_file_list.end())
+            if (consolidated_file_list.find(filename) ==
+                consolidated_file_list.end())
                 missing_filename_list.push_back(filename);
 
         // serialize list of files
         std::string serialized_filename_list;
-        if (!serialize_filename_list(missing_filename_list, serialized_filename_list, error)) {
+        if (!serialize_filename_list(missing_filename_list,
+            serialized_filename_list, error)) {
             log(error);
             return std::string();
         }
@@ -238,7 +250,8 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
 
         // serialize the sync_data and send back to client
         std::string serialized_sync_data;
-        if (!serialize_sync_data(reply_data, serialized_sync_data, error)) {
+        if (!serialize_sync_data(reply_data,
+            serialized_sync_data, error)) {
             log(error);
             return std::string();
         }
@@ -270,22 +283,27 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
             std::vector<file> missing_files;
 
             for (const auto& this_file : consolidated_file_list) {
-                const auto this_client_filename_list = client_filename_list.at(address);
+                const auto this_client_filename_list =
+                    client_filename_list.at(address);
 
-                if (std::find(this_client_filename_list.begin(), this_client_filename_list.end(), this_file.first) == this_client_filename_list.end())
+                if (std::find(this_client_filename_list.begin(),
+                    this_client_filename_list.end(), this_file.first)
+                    == this_client_filename_list.end())
                     missing_files.push_back(this_file.second);
             }
 
             // serialize missing files
             std::string serialized_missing_files;
-            if (serialize_files(missing_files, serialized_missing_files, error)) {
+            if (serialize_files(missing_files,
+                serialized_missing_files, error)) {
                 sync_data missing_files_data;
                 missing_files_data.mode = sync_mode::filelist;
                 missing_files_data.payload = serialized_missing_files;
 
                 // serialize sync_data
                 std::string serialized_sync_data;
-                if (serialize_sync_data(missing_files_data, serialized_sync_data, error)) {
+                if (serialize_sync_data(missing_files_data,
+                    serialized_sync_data, error)) {
                     // send to client
                     if (missing_files.empty()) {
 #if VERBOSE
@@ -293,7 +311,8 @@ std::string process_data_received(const liblec::lecnet::tcp::server::client_addr
 #endif
                     }
                     else
-                        log("Sending " + std::to_string(missing_files.size()) + " files to client");
+                        log("Sending " + std::to_string(missing_files.size())
+                            + " files to client");
 
                     return serialized_sync_data;
                 }
