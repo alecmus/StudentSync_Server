@@ -29,6 +29,9 @@
     <None Include="README.md">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="LICENSE.md">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="process_data_received.h">

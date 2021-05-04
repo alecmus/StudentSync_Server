@@ -159,6 +159,7 @@
     <ClCompile Include="StudentSync_Server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="LICENSE.md" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
